@@ -1,0 +1,9 @@
+# mysql config
+host: '127.0.0.1'
+db: 'test'
+user: 'root'
+password: 'root'
+port: '3306'
+
+# the dir to store .rst
+prefix: 'data'
