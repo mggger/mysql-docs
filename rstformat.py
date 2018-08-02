@@ -71,7 +71,8 @@ class RstFormat(object):
         for column in self.columns:
             name = column[0]
             comment = column[1]
-            comment = comment.replace('\n', ' ')
+            comment = comment.replace('\n', ' ').replace('\r', '').replace('\t', ' ')
+            comment = self.ch2en(comment)
 
             _type = column[2]
 
@@ -117,6 +118,14 @@ class RstFormat(object):
             return '|' + name + ' ' * (self.length_1 - self.get_length(name)) + \
                    '|' + comment + ' ' * (self.length_2 - self.get_length(comment)) + \
                    '|' + _type + ' ' * (self.length_3 - self.get_length(_type)) + '|'
+
+    def ch2en(self, string):
+        """ 中文标点换成英文标点"""
+        return string.replace('，', ',').replace('“','"').\
+                      replace('‘','\'').replace('：', ':').\
+                      replace('？','?').replace('；', ';').\
+                      replace('”', '\'')
+
 
     def get_length(self, string):
         row_l = len(string)
