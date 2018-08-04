@@ -3,15 +3,16 @@ import yaml
 from rstformat import RstFormat
 
 
+from pymysql.connections import Connection
+from typing import Dict, List, Tuple
 class Scan(object):
 
-    def __init__(self, config):
+    def __init__(self, config: Dict[str, str]) -> None:
         self.config = config
         self.table_info = []
         self.info = {}
 
-    def process(self):
-        try:
+    def process(self) -> None:
             conn = pymysql.connect(host=self.config['host'],
                                    user=self.config['user'],
                                    password=self.config['password'],
@@ -20,11 +21,9 @@ class Scan(object):
                                    cursorclass=pymysql.cursors.DictCursor)
 
             self.scan_all(conn)
-
-        finally:
             conn.close()
 
-    def scan_all(self, conn):
+    def scan_all(self, conn: Connection) -> None:
         sql = """    
             select
                 table_name,
@@ -49,7 +48,7 @@ class Scan(object):
                 }
             )
 
-    def scan_one(self, conn, table_name):
+    def scan_one(self, conn: Connection, table_name: str) -> List[Tuple[str, str, str]]:
         sql = """
             show full fields from %s;
         """ % (table_name)
@@ -59,17 +58,3 @@ class Scan(object):
             items = cursor.fetchall()
 
         return [(item['Field'], item['Comment'], item['Type']) for item in items]
-
-
-if __name__ == '__main__':
-    with open('config.yml', 'rb') as f:
-        config = yaml.load(f)
-
-    _scan = Scan(config)
-    _scan.process()
-
-    prefix = config['prefix']
-
-    for table in _scan.table_info:
-        rst = RstFormat(table, prefix=prefix)
-        rst.to_rst()

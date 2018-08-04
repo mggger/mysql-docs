@@ -4,6 +4,7 @@
 import os
 
 
+from typing import Dict, List, Tuple, Union
 class RstFormat(object):
     """ mysql ddl => .rst
 
@@ -19,7 +20,7 @@ class RstFormat(object):
 
     """
 
-    def __init__(self, source, prefix='.'):
+    def __init__(self, source: Dict[str, Union[str, List[Tuple[str, str, str]]]], prefix: str = '.') -> None:
         """source: {
                 'table_name':     'institution',
                 'table_comment':  '机构表',
@@ -41,7 +42,7 @@ class RstFormat(object):
         self.length_3 = 20
         self.prefix = prefix
 
-    def to_rst(self):
+    def to_rst(self) -> None:
 
         if not os.path.exists(self.prefix):
             os.mkdir(self.prefix)
@@ -52,7 +53,7 @@ class RstFormat(object):
             result = self.make_up_string()
             f.write(result.encode('utf-8'))
 
-    def make_up_string(self):
+    def make_up_string(self) -> str:
         # title
         title = f"{self.tableName}({self.comment})"
         title_line = '=' * (self.get_length(title) + 2)
@@ -85,7 +86,7 @@ class RstFormat(object):
 
         return title + '\n' + title_line + '\n\n' + table_line + '\n' + heads + '\n' + heads_line + '\n' + columns_str
 
-    def make_column_str(self, name, comment, _type):
+    def make_column_str(self, name: str, comment: str, _type: str) -> str:
 
         comment_len = self.get_length(comment)
         if comment_len > self.length_2:
@@ -119,7 +120,7 @@ class RstFormat(object):
                    '|' + comment + ' ' * (self.length_2 - self.get_length(comment)) + \
                    '|' + _type + ' ' * (self.length_3 - self.get_length(_type)) + '|'
 
-    def ch2en(self, string):
+    def ch2en(self, string: str) -> str:
         """ 中文标点换成英文标点"""
         return string.replace('，', ',').replace('“','"').\
                       replace('‘','\'').replace('：', ':').\
@@ -127,7 +128,7 @@ class RstFormat(object):
                       replace('”', '\'')
 
 
-    def get_length(self, string):
+    def get_length(self, string: str) -> int:
         row_l = len(string)
         utf8_l = len(string.encode('utf-8'))
         return int((utf8_l - row_l) / 2) + row_l
