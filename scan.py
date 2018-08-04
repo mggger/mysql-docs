@@ -31,7 +31,7 @@ class Scan(object):
                 table_comment
                 from information_schema.TABLES
             where TABLE_SCHEMA = '%s'
-        """ % (config['db'])
+        """ % (self.config['db'])
 
         with conn.cursor() as cursor:
             cursor.execute(sql)
